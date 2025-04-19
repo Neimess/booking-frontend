@@ -1,0 +1,18 @@
+/* Перекрываем лишь немного: увеличим карточки и отступы */
+.card {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  .map-placeholder {
+    min-height: 200px;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-style: italic;
+  }
+  /* Подсказки */
+  .booking-details p {
+    margin-bottom: .5rem;
+  }
+  
