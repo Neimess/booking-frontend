@@ -11,8 +11,8 @@ FROM node:20-alpine AS development
 WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
 COPY . .
-RUN npm install -g nodemon
-CMD ["nodemon", "--legacy-watch", "src/index.js"]
+CMD ["npm", "start"]
+
 
 # Стадия production: минимальный запуск без dev-инструментов
 FROM node:20-alpine AS production
