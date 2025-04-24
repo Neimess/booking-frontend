@@ -1,131 +1,140 @@
+// src/pages/SearchPage.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Container, Grid, Box, Paper, Divider, Typography, ToggleButtonGroup, ToggleButton, useMediaQuery } from '@mui/material';
+import {
+  Container,
+  Grid,
+  Box,
+  Paper,
+  Typography,
+  ToggleButtonGroup,
+  ToggleButton,
+  useMediaQuery
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import MapIcon from '@mui/icons-material/Map';
 
-// Import components
 import SearchBar from '../components/SearchBar';
 import SearchResults from '../components/search/SearchResults';
 import MapView from '../components/map/MapView';
+import SidebarFilters from '../components/search/SidebarFilters';
 import { getMockHotels } from '../services/mockApi';
 
-const SearchPage = () => {
+export default function SearchPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
   const location = useLocation();
 
-  // State
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [viewMode, setViewMode] = useState('list');
 
-  // Parse query params
+  // Параметры поиска из URL
   const queryParams = new URLSearchParams(location.search);
   const searchCity = queryParams.get('city') || '';
   const searchDates = {
     checkIn: queryParams.get('checkIn') || '',
     checkOut: queryParams.get('checkOut') || '',
   };
-  const searchGuests = queryParams.get('guests') ? parseInt(queryParams.get('guests'), 10) : 2;
+  const searchGuests = queryParams.get('guests')
+    ? parseInt(queryParams.get('guests'), 10)
+    : 2;
 
-  // Load hotels
+  // Загрузка отелей
   useEffect(() => {
     setLoading(true);
     getMockHotels()
       .then(data => {
-        // Filter if there's a city
-        let filteredData = data;
+        let filtered = data;
         if (searchCity) {
-          filteredData = data.filter(hotel =>
-            hotel.city.toLowerCase().includes(searchCity.toLowerCase())
+          filtered = data.filter(h =>
+            h.city.toLowerCase().includes(searchCity.toLowerCase())
           );
         }
-        setHotels(filteredData);
+        setHotels(filtered);
         setLoading(false);
       })
       .catch(err => {
-        console.error('Error fetching hotels:', err);
-        setError('Произошла ошибка при загрузке данных. Пожалуйста, попробуйте позже.');
+        console.error(err);
+        setError('Ошибка при загрузке данных. Попробуйте позже.');
         setLoading(false);
       });
   }, [searchCity]);
 
-  // Handle hotel selection
-  const handleSelectHotel = (hotel) => {
+  const handleSelectHotel = hotel => {
     navigate(`/hotel/${hotel.id}`);
   };
 
-  // Handle view mode change
-  const handleViewModeChange = (event, newMode) => {
-    if (newMode !== null) {
-      setViewMode(newMode);
-    }
+  const handleViewModeChange = (_e, newMode) => {
+    if (newMode) setViewMode(newMode);
   };
 
-  // Convert hotels to map points format
-  const mapPoints = hotels.map(hotel => ({
-    id: hotel.id,
-    coords: [hotel.lat || 55.7558, hotel.lng || 37.6173], // Use Moscow as fallback if no coords
-    label: hotel.name
+  const mapPoints = hotels.map(h => ({
+    id: h.id,
+    coords: [h.lat || 55.7558, h.lng || 37.6173],
+    label: h.name,
   }));
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      {/* Search Bar */}
+      {/* 1) Поисковая строка */}
       <Paper elevation={3} sx={{ p: 3, mb: 4, borderRadius: 2 }}>
-        <SearchBar initialCity={searchCity} initialDates={searchDates} initialGuests={searchGuests} />
+        <SearchBar
+          initialCity={searchCity}
+          initialDates={searchDates}
+          initialGuests={searchGuests}
+        />
       </Paper>
 
-      {/* Results Count & View Toggle */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h6">
-          {loading ? 'Поиск...' : `Найдено ${hotels.length} вариантов`}
-        </Typography>
-
-        <ToggleButtonGroup
-          value={viewMode}
-          exclusive
-          onChange={handleViewModeChange}
-          aria-label="view mode"
-        >
-          <ToggleButton value="list" aria-label="list view">
-            <ViewListIcon />
-          </ToggleButton>
-          <ToggleButton value="map" aria-label="map view">
-            <MapIcon />
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </Box>
-
-      {/* Mobile View */}
+      {/* 2) Mobile: заголовок+toggle внутри SearchResults */}
       {isMobile && (
-        <Box>
-          {viewMode === 'list' ? (
-            <SearchResults
-              listings={hotels}
-              onSelect={handleSelectHotel}
-              isLoading={loading}
-              error={error}
-            />
-          ) : (
-            <Box sx={{ height: 'calc(100vh - 300px)', mb: 4 }}>
-              <MapView
-                points={mapPoints}
-              />
-            </Box>
-          )}
-        </Box>
+        <SearchResults
+          listings={hotels}
+          onSelect={handleSelectHotel}
+          isLoading={loading}
+          error={error}
+          showHeaderToggle={true}  // прокинем пропсу, чтобы внутри показывалась шапка
+          viewMode={viewMode}
+          onViewModeChange={handleViewModeChange}
+        />
       )}
 
-      {/* Desktop View */}
+      {/* 3) Desktop: фильтры / (заголовок+список) / карта */}
       {!isMobile && (
         <Grid container spacing={3}>
-          {/* List */}
-          <Grid item xs={12} md={7} lg={8}>
+          {/* Фильтры */}
+          <Grid item xs={12} md={3}>
+            <Box sx={{ position: 'sticky', top: 100 }}>
+              <SidebarFilters />
+            </Box>
+          </Grid>
+
+          {/* Центральная колонка */}
+          <Grid item xs={12} md={6}>
+            {/* Заголовок + Toggle */}
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+              <Typography variant="h6">
+                {loading ? 'Поиск...' : `Найдено ${hotels.length} вариантов`}
+              </Typography>
+              <ToggleButtonGroup
+                value={viewMode}
+                exclusive
+                onChange={handleViewModeChange}
+                aria-label="view mode"
+              >
+                <ToggleButton value="list" aria-label="list view">
+                  <ViewListIcon />
+                </ToggleButton>
+                <ToggleButton value="map" aria-label="map view">
+                  <MapIcon />
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
+
+            {/* Список отелей */}
             <SearchResults
               listings={hotels}
               onSelect={handleSelectHotel}
@@ -134,17 +143,11 @@ const SearchPage = () => {
             />
           </Grid>
 
-          {/* Map */}
-          <Grid item xs={12} md={5} lg={4}>
-            <Box sx={{
-              height: 'calc(100vh - 200px)',
-              position: 'sticky',
-              top: 100
-            }}>
+          {/* Карта */}
+          <Grid item xs={12} md={3}>
+            <Box sx={{ position: 'sticky', top: 100, height: 'calc(100vh - 200px)' }}>
               <Paper elevation={3} sx={{ height: '100%', borderRadius: 2, overflow: 'hidden' }}>
-                <MapView
-                  points={mapPoints}
-                />
+                <MapView points={mapPoints} />
               </Paper>
             </Box>
           </Grid>
@@ -152,6 +155,4 @@ const SearchPage = () => {
       )}
     </Container>
   );
-};
-
-export default SearchPage;
+}

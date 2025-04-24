@@ -74,13 +74,20 @@ export default function SearchResults({ listings = [], onSelect, isLoading = fal
 
   return (
     <Box sx={{ py: 2 }}>
-      <Grid container spacing={3}>
-        {displayedHotels.map(hotel => (
-          <Grid item xs={12} md={6} key={hotel.id}>
-            <HotelCard hotel={hotel} onSelect={onSelect} />
-          </Grid>
-        ))}
-      </Grid>
+<Grid container spacing={3} alignItems="stretch">
+  {displayedHotels.map((hotel) => (
+    <Grid
+      item
+      xs={12}
+      sm={6}
+      md={4}
+      key={hotel.id}
+      sx={{ display: 'flex', width: '100%' }} // ← вот здесь добавляем width: '100%'
+    >
+      <HotelCard hotel={hotel} onSelect={onSelect} />
+    </Grid>
+  ))}
+</Grid>
 
       {totalPages > 1 && (
         <Box display="flex" justifyContent="center" mt={4}>
