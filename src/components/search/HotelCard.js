@@ -20,20 +20,29 @@ import LocalParkingIcon from '@mui/icons-material/LocalParking';
 import FreeBreakfastIcon from '@mui/icons-material/FreeBreakfast';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 
+
+// Высоты блоков карточки
+const CARD_MEDIA_H = 200;   // высота изображения
+const CARD_CONTENT_H = 210; // высота текстового контента
+const CARD_ACTIONS_H = 56;  // высота блока с кнопкой
+const CARD_HEIGHT = CARD_MEDIA_H + CARD_CONTENT_H + CARD_ACTIONS_H;
+
 // Styled components for better visual presentation
 const StyledCard = styled(Card)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
-    height: '100%',
+    justifyContent: 'space-between',
+    width: '100%',             // занять всю ширину Grid item
+    height: CARD_HEIGHT,
+    maxHeight: CARD_HEIGHT,
     transition: 'transform 0.3s ease, box-shadow 0.3s ease',
     '&:hover': {
-        transform: 'translateY(-5px)',
-        boxShadow: theme.shadows[8],
+      transform: 'translateY(-5px)',
+      boxShadow: theme.shadows[8],
     },
     position: 'relative',
-    overflow: 'hidden',
     borderRadius: theme.shape.borderRadius * 2,
-}));
+  }));
 
 const PriceTag = styled(Box)(({ theme }) => ({
     position: 'absolute',
@@ -74,11 +83,12 @@ export default function HotelCard({ hotel, onSelect }) {
 
             {/* Hotel image */}
             <CardMedia
-                component="img"
-                height="200"
-                image={hotel.images?.[0] || 'https://placehold.co/600x400/eee/999?text=Фото+не+доступно'}
-                alt={hotel.name}
-                onError={handleImageError}
+            component="img"
+            height={CARD_MEDIA_H}
+            image={hotel.images?.[0] || 'https://placehold.co/600x400/eee/999?text=Нет+фото'}
+            alt={hotel.name}
+            onError={handleImageError}
+            sx={{ objectFit: 'cover', width: '100%' }}  // ← width: '100%' (фикс)
             />
 
             <CardContent sx={{ flexGrow: 1, pb: 1 }}>
