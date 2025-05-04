@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage';
 import BookingViewPage from './pages/BookingViewPage';
 import NotFound from './pages/NotFound';
+import HotelDetailPage from './pages/HotelDetailPage';
 
 export default function AppRoutes() {
   return (
@@ -19,6 +20,7 @@ export default function AppRoutes() {
       <Route path="*" element={<NotFound />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/hotel/:id" element={<HotelDetailPage />} />
     </Routes>
   );
 }

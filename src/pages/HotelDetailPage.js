@@ -101,6 +101,16 @@ const PriceBadge = styled(Chip)(({ theme }) => ({
   zIndex: 1,
 }));
 
+const amenityIcons = {
+  'Бесплатный Wi-Fi': <WifiIcon />,
+  'Бассейн': <PoolIcon />,
+  'Спа': <SpaIcon />,
+  'Тренажерный зал': <FitnessCenterIcon />,
+  'Ресторан': <RestaurantIcon />,
+  'Парковка': <LocalParkingIcon />,
+  'Завтрак включен': <FreeBreakfastIcon />,
+};
+
 const HotelDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
