@@ -35,7 +35,7 @@ export default function Header() {
   const [user] = useState({
     name: 'Иван Петров',
     email: 'ivan@example.com',
-    isLoggedIn: true
+    isLoggedIn: false
   });
 
   const handleMenu = (event) => {
@@ -103,83 +103,117 @@ export default function Header() {
 
                 {/* User section */}
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Button
-                    color="inherit"
+                  {user.isLoggedIn ? (
+                    <>
+                      <Button
+                        color="inherit"
+                        component={RouterLink}
+                        to="/bookings"
+                        sx={{ mr: 1 }}
+                      >
+                        Мои бронирования
+                      </Button>
+                      <IconButton color="inherit" sx={{ mr: 1 }}>
+                        <Badge badgeContent={2} color="error">
+                          <Notifications />
+                        </Badge>
+                      </IconButton>
+                      <IconButton
+                        size="large"
+                        edge="end"
+                        onClick={handleMenu}
+                        color="inherit"
+                      >
+                        <Avatar sx={{ width: 32, height: 32, bgcolor: 'white' }}>
+                          <Typography variant="body1" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+                            {user.name.charAt(0)}
+                          </Typography>
+                        </Avatar>
+                      </IconButton>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        color="inherit"
+                        component={RouterLink}
+                        to="/login"
+                        sx={{ mr: 1 }}
+                      >
+                        Войти
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="inherit"
+                        component={RouterLink}
+                        to="/register"
+                        sx={{ mr: 1 }}
+                      >
+                        Зарегистрироваться
+                      </Button>
+                    </>
+                  )}
+                </Box>
+
+                {/* Выпадающее меню с профилем */}
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                >
+                  {user.isLoggedIn && (
+                    <MenuItem disabled sx={{ opacity: 1 }}>
+                      <Box>
+                        <Typography variant="body1" fontWeight="bold">{user.name}</Typography>
+                        <Typography variant="body2" color="text.secondary">{user.email}</Typography>
+                      </Box>
+                    </MenuItem>
+                  )}
+
+                  <MenuItem
                     component={RouterLink}
                     to="/bookings"
-                    sx={{ mr: 1 }}
+                    onClick={handleClose}
                   >
                     Мои бронирования
-                  </Button>
-                  <IconButton color="inherit" sx={{ mr: 1 }}>
-                    <Badge badgeContent={2} color="error">
-                      <Notifications />
-                    </Badge>
-                  </IconButton>
-                  <IconButton
-                    size="large"
-                    edge="end"
-                    onClick={handleMenu}
-                    color="inherit"
-                  >
-                    <Avatar sx={{ width: 32, height: 32, bgcolor: 'white' }}>
-                      {user.isLoggedIn ? (
-                        <Typography variant="body1" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
-                          {user.name.charAt(0)}
-                        </Typography>
-                      ) : (
-                        <AccountCircle color="primary" />
-                      )}
-                    </Avatar>
-                  </IconButton>
-                  <Menu
-                    id="menu-appbar"
-                    anchorEl={anchorEl}
-                    open={Boolean(anchorEl)}
-                    onClose={handleClose}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right',
-                    }}
-                  >
-                    {user.isLoggedIn && (
-                      <MenuItem disabled sx={{ opacity: 1 }}>
-                        <Box>
-                          <Typography variant="body1" fontWeight="bold">{user.name}</Typography>
-                          <Typography variant="body2" color="text.secondary">{user.email}</Typography>
-                        </Box>
+                  </MenuItem>
+
+                  {user.isLoggedIn ? (
+                    <>
+                      <MenuItem onClick={handleClose}>Мой профиль</MenuItem>
+                      <Divider />
+                      <MenuItem
+                        component={RouterLink}
+                        to="/admin"
+                        onClick={handleClose}
+                      >
+                        Админ панель
                       </MenuItem>
-                    )}
-
-                    <MenuItem
-                      component={RouterLink}
-                      to="/bookings"
-                      onClick={handleClose}
-                    >
-                      Мои бронирования
-                    </MenuItem>
-
-                    {user.isLoggedIn ? (
-                      <>
-                        <MenuItem onClick={handleClose}>Мой профиль</MenuItem>
-                        <Divider />
-                        <MenuItem
-                          component={RouterLink}
-                          to="/admin"
-                          onClick={handleClose}
-                        >
-                          Админ панель
-                        </MenuItem>
-                        <MenuItem onClick={handleClose}>Выйти</MenuItem>
-                      </>
-                    ) : (
-                      <>
-                        <MenuItem onClick={handleClose}>Войти</MenuItem>
-                        <MenuItem onClick={handleClose}>Зарегистрироваться</MenuItem>
-                      </>
-                    )}
-                  </Menu>
-                </Box>
+                      <MenuItem onClick={handleClose}>Выйти</MenuItem>
+                    </>
+                  ) : (
+                    <>
+                      <MenuItem
+                        component={RouterLink}
+                        to="/login"
+                        onClick={handleClose}
+                      >
+                        Войти
+                      </MenuItem>
+                      <MenuItem
+                        component={RouterLink}
+                        to="/register"
+                        onClick={handleClose}
+                      >
+                        Зарегистрироваться
+                      </MenuItem>
+                    </>
+                  )}
+                </Menu>
               </>
             )}
           </Toolbar>
