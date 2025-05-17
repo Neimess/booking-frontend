@@ -20,9 +20,10 @@ import {
   Menu as MenuIcon,
   BedOutlined,
   Notifications,
-  Language,
   AccountCircle,
-  Person,
+  Favorite,
+  FavoriteBorder,
+  Favorite as FavoriteIcon,
 } from '@mui/icons-material';
 
 export default function Header() {
@@ -99,6 +100,17 @@ export default function Header() {
                   >
                     Отели
                   </Button>
+
+                  {/* ✅ Кнопка Избранное */}
+                  <Button
+                    color="inherit"
+                    startIcon={<FavoriteIcon />}
+                    component={RouterLink}
+                    to="/favorites"
+                    sx={{ mr: 1, fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                  >
+                    Избранное
+                  </Button>
                 </Box>
 
                 {/* User section */}
@@ -159,6 +171,14 @@ export default function Header() {
                       Мои бронирования
                     </MenuItem>
 
+                    <MenuItem
+                      component={RouterLink}
+                      to="/favorites"
+                      onClick={handleClose}
+                    >
+                      Избранное
+                    </MenuItem>
+
                     {user.isLoggedIn ? (
                       <>
                         <MenuItem onClick={handleClose}>Мой профиль</MenuItem>
@@ -203,6 +223,15 @@ export default function Header() {
         >
           <BedOutlined sx={{ mr: 1 }} />
           Отели
+        </MenuItem>
+
+        <MenuItem
+          component={RouterLink}
+          to="/favorites"
+          onClick={handleMobileMenuClose}
+        >
+          <FavoriteIcon sx={{ mr: 1 }} />
+          Избранное
         </MenuItem>
 
         <Divider />
